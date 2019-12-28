@@ -56,7 +56,7 @@ function Cartridge:print_info()
     printf("Number of 8KiB RAM banks: %d", self.ram_banks)
     if has_batt_ram then print "Has a battery-backed RAM" end
     if has_trainer then print "Has 512-byte trainer at $7000-$71FF" end
-    printf("The game uses %s", self.mirroring_mode)
+    printf("The game uses %s mirroring", self.mirroring_mode)
     printf("Mapper number: %d", self.mapper)
 end
 

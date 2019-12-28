@@ -10,9 +10,6 @@ function love.load()
     cart:print_info()
 end
 
-function love.update(dt)
-end
-
 function love.keyreleased(key, scancode)
     if key == "d" then
         if debug == false then
@@ -25,5 +22,10 @@ function love.keyreleased(key, scancode)
     end
 end
 
+function love.update(dt)
+    nes:render_display()
+end
+
 function love.draw()
+    love.graphics.draw(nes:get_display(), 0, 0)
 end
