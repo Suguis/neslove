@@ -26,7 +26,7 @@ function nes.load_cart(cart)
             and bit.band(0x01, ctrl_byte1) or 2 -- (0x08 & ctrl_byte1 == 0) ? (0x01 & ctrl_byte1) : 2
         local mapper = bit.bor(bit.band(ctrl_byte2, 0xF0), bit.rshift(ctrl_byte1, 4)) -- (ctrl_byte2 & 0xF0) || (ctrl_byte1 >> 4)
 
-        printf("Cartridge info:")
+        print "Cartridge info:"
         printf("Number of 16KiB PGR-ROM banks: %d", pgr_banks)
         printf("Number of 8KiB CHR-ROM/VROM banks: %d", chr_banks)
         printf("Number of 8KiB RAM banks: %d", ram_banks)
