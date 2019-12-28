@@ -20,11 +20,11 @@ function nes.load_cart(cart)
         local ctrl_byte2 = cart:read(1):byte(1)
         local ram_banks = cart:read(1):byte(1); if ram_banks == 0 then ram_banks = 1 end
 
-        local has_batt_ram = bit.band(0x40, ctrl_byte1) ~= 0
-        local has_trainer = bit.band(0x20, ctrl_byte1) ~= 0
-        local mirroring_mode = bit.rshift(bit.band(0x10, ctrl_byte1), 4) -- (0x10 & ctrl_byte1) >> 4
-            and bit.band(0x80, ctrl_byte1) or 2 -- (0x10 & ctrl_byte1 == 0) ? (0x80 & ctrl_byte1) : 2
-        local mapper = bit.bor(bit.lshift(ctrl_byte2, 4), bit.band(0x0F, ctrl_byte1)) -- (ctrl_byte2 << 4) || (0x0F & ctrl_byte1)
+        local has_batt_ram = bit.band(0x02, ctrl_byte1) ~= 0
+        local has_trainer = bit.band(0x04, ctrl_byte1) ~= 0
+        local mirroring_mode = bit.band(0x08, ctrl_byte1) == 0
+            and bit.band(0x01, ctrl_byte1) or 2 -- (0x08 & ctrl_byte1 == 0) ? (0x01 & ctrl_byte1) : 2
+        local mapper = bit.bor(bit.band(ctrl_byte2, 0xF0), bit.rshift(ctrl_byte1, 4)) -- (ctrl_byte2 & 0xF0) || (ctrl_byte1 >> 4)
 
         printf("Cartridge info:")
         printf("Number of 16KiB PGR-ROM banks: %d", pgr_banks)
@@ -33,6 +33,7 @@ function nes.load_cart(cart)
         if has_batt_ram then print "Has a battery-backed RAM" end
         if has_trainer then print "Has 512-byte trainer at $7000-$71FF" end
         printf("The game uses %s", mirroring_modes[mirroring_mode + 1])
+        printf("Mapper number: %d", mapper)
         cart:read(7) -- Unused bytes for the iNES format
     else
         print "Error, the file is not a valid iNES rom"
