@@ -9,9 +9,9 @@ Nes.__index = Nes
 
 function Nes:new()
     local pixels = {}
-    for i = 1, self.SCREEN_HEIGHT do
+    for i = 1, self.DISPLAY_HEIGHT do
         pixels[i] = {}
-        for j = 1, self.SCREEN_WIDTH do
+        for j = 1, self.DISPLAY_WIDTH do
             pixels[i][j] = rgb(255, 255, 255)
         end
     end
@@ -27,8 +27,8 @@ end
 
 function Nes:render_display()
     self.display:renderTo(function()
-        for i = 1, self.SCREEN_HEIGHT do
-            for j = 1, self.SCREEN_WIDTH do
+        for i = 1, self.DISPLAY_HEIGHT do
+            for j = 1, self.DISPLAY_WIDTH do
                 love.graphics.setColor(self.pixels[i][j])
                 love.graphics.points(j - 0.5, i - 0.5)
             end

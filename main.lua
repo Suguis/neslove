@@ -13,10 +13,10 @@ end
 function love.keyreleased(key, scancode)
     if key == "d" then
         if debug == false then
-            love.window.setMode(Nes.SCREEN_WIDTH + 256, Nes.SCREEN_HEIGHT)
+            love.window.setMode(Nes.DISPLAY_WIDTH + 256, Nes.DISPLAY_HEIGHT)
             debug = true
         else
-            love.window.setMode(Nes.SCREEN_WIDTH, Nes.SCREEN_HEIGHT)
+            love.window.setMode(Nes.DISPLAY_WIDTH, Nes.DISPLAY_HEIGHT)
             debug = false
         end
     end
