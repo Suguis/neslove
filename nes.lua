@@ -16,6 +16,7 @@ function Nes:new()
         end
     end
     return setmetatable({
+        cartridge = nil,
         pixels = pixels,
         display = love.graphics.newCanvas(DISPLAY_WIDTH, DISPLAY_HEIGHT)
     }, self)
@@ -23,6 +24,10 @@ end
 
 function Nes:insert_cartridge(cartridge)
     self.cartridge = cartridge
+end
+
+function Nes:reset()
+    self.cartridge:load_rom()
 end
 
 function Nes:render_display()
