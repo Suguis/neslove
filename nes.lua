@@ -1,3 +1,4 @@
+local Cpu = require "cpu"
 local util = require "util"
 local rgb = util.rgb
 
@@ -16,6 +17,7 @@ function Nes:new()
         end
     end
     return setmetatable({
+        cpu = Cpu:new(),
         cartridge = nil,
         pixels = pixels,
         display = love.graphics.newCanvas(DISPLAY_WIDTH, DISPLAY_HEIGHT)
@@ -28,6 +30,7 @@ end
 
 function Nes:reset()
     self.cartridge:load_rom()
+    self.cpu:reset()
 end
 
 function Nes:render_display()
