@@ -13,7 +13,7 @@ function debugging.draw()
         dir = nes.cpu.PC - 5 + i 
         local val = nes.cpu:read(dir)
         if dir > 0xFFFF or dir < 0x8000 then val = 0 end 
-        love.graphics.print(string.format("%s0x%04x: 0x%02x", dir == nes.cpu.PC and ">" or " ", dir, val), debugging.DISPLAY_LENGTH + 1, (i+4) * 12) 
+        love.graphics.print(string.format("%s$%04x: %02x", dir == nes.cpu.PC and ">" or " ", dir, val), debugging.DISPLAY_LENGTH + 1, (i+4) * 12) 
     end
 end
 
