@@ -22,6 +22,8 @@ function love.keyreleased(key, scancode)
             love.window.setMode(Nes.DISPLAY_WIDTH, Nes.DISPLAY_HEIGHT)
             debugging.on = false
         end
+    elseif key == debugging.step_key then
+        nes.cpu:cycle()
     end
 end
 
