@@ -14,7 +14,7 @@ function love.load()
 end
 
 function love.keyreleased(key, scancode)
-    if key == "d" then
+    if key == debugging.toggle_key then
         if not debugging.on then
             love.window.setMode(Nes.DISPLAY_WIDTH + debugging.DISPLAY_LENGTH, Nes.DISPLAY_HEIGHT)
             debugging.on = true

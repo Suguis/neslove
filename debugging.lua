@@ -1,7 +1,8 @@
 local debugging = {
     DISPLAY_LENGTH = 256,
     font = love.graphics.newFont("terminus.ttf"),
-    on = false
+    on = false,
+    toggle_key = "d"
 }
 
 function debugging.draw()
