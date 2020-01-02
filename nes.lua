@@ -29,7 +29,7 @@ function Nes:insert_cartridge(cartridge)
 end
 
 function Nes:reset()
-    self.cartridge:load_rom()
+    self.cartridge.mapper:reset()
     self.cpu:reset()
 end
 

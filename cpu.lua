@@ -24,7 +24,7 @@ end
 
 function Cpu:read(addr)
     if addr >= 0x8000 and addr < 0xFFFF then
-        return nes.cartridge:read(addr - 0x8000)
+        return nes.cartridge.mapper:read(addr - 0x8000)
     end
 end
         
