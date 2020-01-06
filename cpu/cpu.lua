@@ -1,4 +1,6 @@
-local instructions = require "instructions"
+local opcodes = require "cpu.opcodes"
+local addr_modes = require "cpu.addr_modes"
+local instructions = require "cpu.instructions"
 
 Cpu = {}
 Cpu.__index = Cpu
@@ -17,6 +19,7 @@ function Cpu:new()
         B = 0,
         V = 0,
         N = 0,
+        operand = nil,
         wait_cycles = 0,
         total_cycles = 0
     }, self)
@@ -41,16 +44,25 @@ function Cpu:decode_instruction(opcode)
     return instructions[opcode]
 end
 
+function Cpu:fetch()
+    local opcode = self:read(self.PC)
+    self.PC = self.PC + 1
+    local operation = opcodes[opcode]
+    if operation then
+        local run_instruction = instructions[operation.instruction]
+        local address = addr_modes[operation.addr_mode]
+        self.wait_cycles = operation.cycles
+        self.operand = address()
+        run_instruction()
+    else
+        error(string.format("Instruction $%02x not implemented", opcode))
+    end
+end
+
 function Cpu:cycle()
     self.total_cycles = self.total_cycles + 1
     if self.wait_cycles == 0 then
-        local instruction = self:decode_instruction(self:read(self.PC))
-        if instruction then
-            instruction.run()
-            self.wait_cycles = instruction.cycles
-        else
-            error(string.format("Instruction $%02x not implemented", self:read(self.PC)))
-        end
+        self:fetch()
     else
         self.wait_cycles = self.wait_cycles - 1
     end

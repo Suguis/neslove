@@ -1,4 +1,4 @@
-local Cpu = require "cpu"
+local Cpu = require "cpu.cpu"
 local util = require "util"
 local rgb = util.rgb
 
