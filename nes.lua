@@ -20,7 +20,8 @@ function Nes:new()
         cpu = Cpu:new(),
         cartridge = nil,
         pixels = pixels,
-        display = love.graphics.newCanvas(DISPLAY_WIDTH, DISPLAY_HEIGHT)
+        display = love.graphics.newCanvas(DISPLAY_WIDTH, DISPLAY_HEIGHT),
+        io = {{}, {}} -- first for $2000-$2007, second for $4000-$401F
     }, self)
 end
 

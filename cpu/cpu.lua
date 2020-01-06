@@ -28,11 +28,15 @@ end
 function Cpu:read(addr)
     if addr >= 0x8000 and addr < 0xFFFF then
         return nes.cartridge.mapper:read(addr - 0x8000)
+    elseif addr >= 0x2000 and addr < 0x4000 then
+        return nes.io[1][((addr - 0x2000) % 8) + 1]
     end
 end
         
 function Cpu:write(addr, data)
     if addr >= 0x8000 and addr < 0xFFFF then
+    elseif addr >= 0x2000 and addr < 0x4000 then
+        nes.io[1][((addr - 0x200) % 8) + 1] = data
     end
 end
 
@@ -63,9 +67,8 @@ function Cpu:cycle()
     self.total_cycles = self.total_cycles + 1
     if self.wait_cycles == 0 then
         self:fetch()
-    else
-        self.wait_cycles = self.wait_cycles - 1
     end
+    self.wait_cycles = self.wait_cycles - 1
 end
 
 return Cpu
