@@ -1,7 +1,7 @@
 local bit = require "bit"
 
 -- Set flags according to the argument
-local function set_negative(byte) nes.cpu.N = bit.band(0x80, byte) == 0x80 and 1 or 0 end
+local function set_negative(byte) nes.cpu.N = bit.rshift(bit.band(0x80, byte), 7) end -- (0x80 & byte) >> 7
 local function set_zero(byte) nes.cpu.Z = byte == 0x00 and 1 or 0 end
 
 local instructions = { 
