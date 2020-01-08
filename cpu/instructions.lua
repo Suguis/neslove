@@ -14,7 +14,7 @@ local instructions = {
     SEC = function() nes.cpu.C = 1 end,
     SED = function() nes.cpu.D = 1 end,
     SEI = function() nes.cpu.I = 1 end,
-    STA = function() nes.cpu:write(nes.cpu.A, nes.cpu.operand) end
+    STA = function() nes.cpu:write(nes.cpu.operand, nes.cpu.A) end
 }
 
 return instructions
