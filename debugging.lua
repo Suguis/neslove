@@ -1,12 +1,33 @@
 local bit = require "bit"
+local opcodes = require "cpu.opcodes"
 
 local debugging = {
     DISPLAY_LENGTH = 256,
+    LINES = 14,
     font = love.graphics.newFont("terminus.ttf"),
     on = false,
     toggle_key = "d",
     step_key = "s"
 }
+
+local function disas(dir)
+    local opcode = nes.cpu:read(dir)
+    local operation = opcodes[opcode]
+    if operation then
+        if operation.addr_mode == "ABSOLUTE" then
+            local last = nes.cpu:read(dir + 1)
+            local first = nes.cpu:read(dir + 2)
+            local operand = bit.bor(bit.lshift(first, 8), last)
+            return string.format("%s $%04x", operation.instruction, operand), 3
+        elseif operation.addr_mode == "IMPLIED" then
+            return operation.instruction, 1
+        elseif operation.addr_mode == "INMEDIATE" then
+            return string.format("%s #$%02x", operation.instruction, nes.cpu:read(dir + 1)), 2
+        end
+    else
+        return "???", 1
+    end
+end
 
 function debugging.update()
     if key == debugging.toggle_key then
@@ -27,11 +48,11 @@ function debugging.draw()
     love.graphics.print(string.format("PC=$%04x SP=$%02x cycles=%d\nA=$%02x X=$%02x Y=$%02x\nC=%d Z=%d I=%d D=%d B=%d V=%d N=%d",
     nes.cpu.PC, nes.cpu.SP, nes.cpu.total_cycles, nes.cpu.A, nes.cpu.X, nes.cpu.Y, nes.cpu.C, nes.cpu.Z, nes.cpu.I, nes.cpu.D, nes.cpu.B, nes.cpu.V, nes.cpu.N),
     debugging.DISPLAY_LENGTH + 1, 0)
-    for i = 1, 10 do 
-        dir = nes.cpu.PC - 5 + i 
-        local val = nes.cpu:read(dir)
-        if dir > 0xFFFF or dir < 0x8000 then val = 0 end 
-        love.graphics.print(string.format("%s$%04x: $%02x", dir == nes.cpu.PC and ">" or " ", dir, val), debugging.DISPLAY_LENGTH + 1, (i+4) * 12) 
+    local curr_dir = nes.cpu.PC
+    for i = 1, debugging.LINES do
+        local ins, len = disas(curr_dir)
+        love.graphics.print(string.format("%s$%04x: %s", curr_dir == nes.cpu.PC and ">" or " ", curr_dir, ins), nes.DISPLAY_WIDTH + 1, (i+4) * 12)
+        curr_dir = curr_dir + len
     end
 end
 
