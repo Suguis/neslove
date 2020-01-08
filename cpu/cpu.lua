@@ -22,7 +22,13 @@ function Cpu:read(addr)
     if addr >= 0x8000 and addr < 0xFFFF then
         return nes.cartridge.mapper:read(addr - 0x8000)
     elseif addr >= 0x2000 and addr < 0x4000 then
-        return nes.io[1][((addr - 0x2000) % 8) + 1]
+        local value = nes.io[1][((addr - 0x2000) % 8) + 1]
+        if value then
+            return value
+        else
+            print("WARNING: Reading an unwritten value, returning 0x00")
+            return 0
+        end
     end
 end
         
