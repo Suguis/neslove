@@ -49,7 +49,6 @@ function Cpu:fetch()
         local run_instruction = instructions[operation.instruction]
         local address = addr_modes[operation.addr_mode]
         self.op_value, self.op_addr = address()
-        print(self.op_value)
         run_instruction()
         self.wait_cycles = operation.cycles
     else
