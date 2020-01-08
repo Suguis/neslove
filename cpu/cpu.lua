@@ -11,7 +11,8 @@ function Cpu:new()
         X = 0, Y = 0, C = 0,
         Z = 0, I = 0, D = 0,
         B = 0, V = 0, N = 0,
-        operand = nil,
+        op_value = nil,
+        op_addr = nil,
         wait_cycles = 0,
         total_cycles = 0
     }, self)
@@ -47,9 +48,10 @@ function Cpu:fetch()
     if operation then
         local run_instruction = instructions[operation.instruction]
         local address = addr_modes[operation.addr_mode]
-        self.wait_cycles = operation.cycles
-        self.operand = address()
+        self.op_value, self.op_addr = address()
+        print(self.op_value)
         run_instruction()
+        self.wait_cycles = operation.cycles
     else
         error(string.format("Instruction $%02x not implemented", opcode))
     end

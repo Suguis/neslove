@@ -17,8 +17,8 @@ local function disas(dir)
         if operation.addr_mode == "ABSOLUTE" then
             local last = nes.cpu:read(dir + 1)
             local first = nes.cpu:read(dir + 2)
-            local operand = bit.bor(bit.lshift(first, 8), last)
-            return string.format("%s $%04x", operation.instruction, operand), 3
+            local dir = bit.bor(bit.lshift(first, 8), last)
+            return string.format("%s $%04x", operation.instruction, dir), 3
         elseif operation.addr_mode == "IMPLIED" then
             return operation.instruction, 1
         elseif operation.addr_mode == "INMEDIATE" then

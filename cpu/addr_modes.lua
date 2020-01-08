@@ -4,14 +4,15 @@ local addr_modes = {
         nes.cpu.PC = nes.cpu.PC + 1
         local first = nes.cpu:read(nes.cpu.PC)
         nes.cpu.PC = nes.cpu.PC + 1
-        local operand = bit.bor(bit.lshift(first, 8), last) -- (first << 8) | last
-        return operand
+        local dir = bit.bor(bit.lshift(first, 8), last) -- (first << 8) | last
+        local value = nes.cpu:read(dir)
+        return value, dir
     end,
     IMPLIED = function() end,
     INMEDIATE = function()
-        local operand = nes.cpu:read(nes.cpu.PC)
+        local value = nes.cpu:read(nes.cpu.PC)
         nes.cpu.PC = nes.cpu.PC + 1
-        return operand
+        return value
     end,
 }
 

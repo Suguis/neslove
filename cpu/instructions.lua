@@ -10,21 +10,21 @@ local instructions = {
     CLI = function() nes.cpu.I = 0 end,
     CLV = function() nes.cpu.V = 0 end,
     LDA = function()
-        local operand = nes.cpu.operand
-        nes.cpu.A = operand
-        set_negative(operand)
-        set_zero(operand)
+        local value = nes.cpu.op_value
+        nes.cpu.A = value
+        set_negative(value)
+        set_zero(value)
     end,
     LDX = function()
-        local operand = nes.cpu.operand
-        nes.cpu.X = operand
-        set_negative(operand)
-        set_zero(operand)
+        local value = nes.cpu.op_value
+        nes.cpu.X = value
+        set_negative(value)
+        set_zero(value)
     end,
     SEC = function() nes.cpu.C = 1 end,
     SED = function() nes.cpu.D = 1 end,
     SEI = function() nes.cpu.I = 1 end,
-    STA = function() nes.cpu:write(nes.cpu.operand, nes.cpu.A) end,
+    STA = function() nes.cpu:write(nes.cpu.op_addr, nes.cpu.A) end,
     TXS = function()
         local X = nes.cpu.X
         nes.cpu.SP = X
