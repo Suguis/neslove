@@ -7,6 +7,7 @@ local function opcode(ins, addrm, cyc)
 end
 
 local opcodes = {
+    [0x10] = opcode("BPL", "RELATIVE", 2),
     [0x18] = opcode("CLC", "IMPLIED", 2),
     [0x38] = opcode("SEC", "IMPLIED", 2),
     [0x58] = opcode("CLI", "IMPLIED", 2),

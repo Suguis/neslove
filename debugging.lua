@@ -23,6 +23,10 @@ local function disas(dir)
             return operation.instruction, 1
         elseif operation.addr_mode == "INMEDIATE" then
             return string.format("%s #$%02x", operation.instruction, nes.cpu:read(dir + 1)), 2
+        elseif operation.addr_mode == "RELATIVE" then
+            local len = 2
+            local offset = nes.cpu:read(dir + 1)
+            return string.format("%s $%04x", operation.instruction, dir + len + (bit.band(0x80, offset) == 0x80 and (offset - 0x100) or offset)), len
         end
     else
         return "???", 1

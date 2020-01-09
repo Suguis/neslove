@@ -56,7 +56,7 @@ function Cpu:fetch()
         local address = addr_modes[operation.addr_mode]
         self.op_value, self.op_addr = address()
         run_instruction()
-        self.wait_cycles = operation.cycles
+        self.wait_cycles = self.wait_cycles + operation.cycles
     else
         error(string.format("Instruction $%02x not implemented", opcode))
     end
