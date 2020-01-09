@@ -1,12 +1,18 @@
 local Mapper = {}
 Mapper.__index = Mapper
 
+-- The Mapper class specifies the behaviour of the mapper specified by the index.
+-- It contains two tables that store the PRG banks and CHR banks, and other table
+-- storing in its 1 and 2 indexes the two banks that are being used.
+-- This class has a global table actions that contains in each index three functions,
+-- that specify the behaviour of the mapper when it is reset or a value in the memory
+-- is read or written.
+
 function Mapper:new(index, prg_banks, chr_banks)
     return setmetatable({
         prg = prg_banks,
-        current_prg = {},
+        current_prg = {nil, nil},
         chr = chr_banks,
-        current_chr = {},
         reset = Mapper.actions[index].reset,
         read = Mapper.actions[index].read,
         index = index,
