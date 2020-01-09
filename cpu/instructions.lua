@@ -1,26 +1,36 @@
 local bit = require "bit"
+local different_page = (require "util").different_page
 
 -- Set flags according to the argument
 local function set_negative(byte) nes.cpu.N = bit.rshift(bit.band(0x80, byte), 7) end -- (0x80 & byte) >> 7
 local function set_zero(byte) nes.cpu.Z = byte == 0x00 and 1 or 0 end
 
--- Page number is indicated by the most significant byte of the address
-local function different_page(addr1, addr2) return bit.rshift(addr1, 8) ~= bit.rshift(addr2, 8) end
-
-local instructions = { 
-    BPL = function()
-        if nes.cpu.N == 0 then
+local function branch(register, value)
+    return function()
+        if nes.cpu[register] == value then
             nes.cpu.wait_cycles = nes.cpu.wait_cycles + 1
             if different_page(nes.cpu.PC, nes.cpu.op_addr) then
                 nes.cpu.wait_cycles = nes.cpu.wait_cycles + 1
             end
             nes.cpu.PC = nes.cpu.op_addr
         end
-    end,
+    end
+end
+
+local instructions = {
+    BCS = branch("C", 1),
+    BPL = branch("N", 0),
     CLC = function() nes.cpu.C = 0 end,
     CLD = function() nes.cpu.D = 0 end,
     CLI = function() nes.cpu.I = 0 end,
     CLV = function() nes.cpu.V = 0 end,
+    CMP = function()
+        local A = nes.cpu.A
+        local value = nes.cpu.op_value
+        nes.cpu.C = A >= value and 1 or 0
+        nes.cpu.Z = A == value and 1 or 0
+        set_negative(A)
+    end,
     LDA = function()
         local value = nes.cpu.op_value
         nes.cpu.A = value
@@ -30,6 +40,12 @@ local instructions = {
     LDX = function()
         local value = nes.cpu.op_value
         nes.cpu.X = value
+        set_negative(value)
+        set_zero(value)
+    end,
+    LDY = function()
+        local value = nes.cpu.op_value
+        nes.cpu.Y = value
         set_negative(value)
         set_zero(value)
     end,

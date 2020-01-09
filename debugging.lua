@@ -19,6 +19,16 @@ local function disas(dir)
             local first = nes.cpu:read(dir + 2)
             local dir = bit.bor(bit.lshift(first, 8), last)
             return string.format("%s $%04x", operation.instruction, dir), 3
+        elseif operation.addr_mode == "ABSOLUTE,X" then
+            local last = nes.cpu:read(dir + 1)
+            local first = nes.cpu:read(dir + 2)
+            local dir = bit.bor(bit.lshift(first, 8), last)
+            return string.format("%s $%04x,X", operation.instruction, dir), 3
+        elseif operation.addr_mode == "ABSOLUTE,Y" then
+            local last = nes.cpu:read(dir + 1)
+            local first = nes.cpu:read(dir + 2)
+            local dir = bit.bor(bit.lshift(first, 8), last)
+            return string.format("%s $%04x,Y", operation.instruction, dir), 3
         elseif operation.addr_mode == "IMPLIED" then
             return operation.instruction, 1
         elseif operation.addr_mode == "INMEDIATE" then

@@ -26,12 +26,15 @@ function Cpu:read(addr)
         if value then
             return value
         else
-            print("WARNING: Reading an unwritten value, returning 0x00")
-            return 0
+            print("WARNING: Reading an unwritten value, returning 0xff")
+            return 0xff
         end
+    else
+        print("WARNING: Reading an unwritten value, returning 0xff")
+        return 0xff
     end
 end
-        
+
 function Cpu:write(addr, data)
     if addr >= 0x8000 and addr < 0xFFFF then
     elseif addr >= 0x2000 and addr < 0x4000 then
