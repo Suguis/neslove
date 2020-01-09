@@ -2,6 +2,11 @@ local Cpu = require "cpu.cpu"
 local util = require "util"
 local rgb = util.rgb
 
+-- The Nes class represents the console itself. It has a CPU, a cartridge, the IO registers and two
+-- special objects used to represent the graphics: the table pixels, a matrix with the same size of
+-- the NES screen in pixels, storing in each cell the color representing that position, and the
+-- canvas display, in which the pixels array is rendered.
+
 Nes = { 
     DISPLAY_WIDTH = 256,
     DISPLAY_HEIGHT = 240 
@@ -34,6 +39,7 @@ function Nes:reset()
     self.cpu:reset()
 end
 
+-- Renders the pixel matrix on the display canvas
 function Nes:render_display()
     self.display:renderTo(function()
         for i = 1, self.DISPLAY_HEIGHT do

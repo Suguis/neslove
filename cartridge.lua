@@ -3,6 +3,10 @@ local bit = require "bit"
 local util = require "util"
 local printf = util.printf
 
+-- The Cartridge class is constructed by the filename. The object is constructed extrating the data of the
+-- file: the CHR and PRG roms, the mapper number and other less relevant data. This cartridge object has
+-- a mapper object associated, that has the CHR and PRG roms extracted from the cartridge.
+
 Cartridge = {}
 Cartridge.__index = Cartridge
 
@@ -63,11 +67,6 @@ function Cartridge:print_info()
     if has_trainer then print "Has 512-byte trainer at $7000-$71FF" end
     printf("The game uses %s mirroring", self.mirroring_mode)
     printf("Mapper number: %d", self.mapper.index)
-end
-
--- Reads a direction from the rom (direction between $0000 and $7FFF)
-function Cartridge:read(dir)
-    return self.mapper:read(dir)
 end
 
 return Cartridge
