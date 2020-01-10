@@ -46,6 +46,12 @@ local addr_modes = {
         end
         local addr = nes.cpu.PC + offset
         return nil, addr
+    end,
+    ZERO_PAGE = function()
+        local addr = nes.cpu:read(nes.cpu.PC)
+        local value = nes.cpu:read(addr)
+        nes.cpu.PC = nes.cpu.PC + 1
+        return value, addr
     end
 }
 

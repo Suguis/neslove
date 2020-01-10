@@ -9,10 +9,12 @@ end
 local opcodes = {
     [0x10] = opcode("BPL", "RELATIVE", 2),
     [0x18] = opcode("CLC", "IMPLIED", 2),
+    [0x20] = opcode("JSR", "ABSOLUTE", 6),
     [0x38] = opcode("SEC", "IMPLIED", 2),
     [0x58] = opcode("CLI", "IMPLIED", 2),
     [0x78] = opcode("SEI", "IMPLIED", 2),
-    [0x8d] = opcode("STA", "ABSOLUTE", 3),
+    [0x85] = opcode("STA", "ZERO_PAGE", 3),
+    [0x8d] = opcode("STA", "ABSOLUTE", 4),
     [0x9a] = opcode("TXS", "IMPLIED", 2),
     [0xa0] = opcode("LDY", "INMEDIATE", 2),
     [0xa2] = opcode("LDX", "INMEDIATE", 2),

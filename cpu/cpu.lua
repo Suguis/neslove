@@ -14,14 +14,23 @@ function Cpu:new()
         op_value = nil,
         op_addr = nil,
         wait_cycles = 0,
-        total_cycles = 0
+        total_cycles = 0,
+        zero_page = {},
+        stack = {}
     }, self)
 end
 
 function Cpu:read(addr)
-    if addr >= 0x8000 and addr < 0xFFFF then
-        return nes.cartridge.mapper:read(addr - 0x8000)
-    elseif addr >= 0x2000 and addr < 0x4000 then
+    if addr >= 0x0000 and addr < 0x0100 then
+        return self.zero_page[addr + 1]
+    elseif addr < 0x0200 then
+        return self.stack[addr - 0xff]
+    elseif addr < 0x0800 then
+        print("RAM reading not supported yet, returning 0xff")
+        return 0xff
+    elseif addr < 0x2000 then -- Mirrors $0000-$07ff
+        return self:read(addr % 0x800)
+    elseif addr < 0x4000 then
         local value = nes.io[1][((addr - 0x2000) % 8) + 1]
         if value then
             return value
@@ -29,6 +38,8 @@ function Cpu:read(addr)
             print("WARNING: Reading an unwritten value, returning 0xff")
             return 0xff
         end
+    elseif addr >= 0x8000 and addr < 0xffff then
+        return nes.cartridge.mapper:read(addr - 0x8000)
     else
         print("WARNING: Reading an unwritten value, returning 0xff")
         return 0xff
@@ -36,14 +47,24 @@ function Cpu:read(addr)
 end
 
 function Cpu:write(addr, data)
-    if addr >= 0x8000 and addr < 0xFFFF then
-    elseif addr >= 0x2000 and addr < 0x4000 then
+    if addr >= 0x0000 and addr < 0x0100 then
+        print("write " .. data .. "to zp " .. addr)
+        self.zero_page[addr + 1] = data
+    elseif addr < 0x0200 then
+        self.stack[addr - 0xff] = data
+    elseif addr < 0x0800 then
+        print("RAM writing not supported yet")
+    elseif addr < 0x2000 then
+        self:write(addr % 0x0800, data)
+    elseif addr < 0x4000 then
         nes.io[1][((addr - 0x200) % 8) + 1] = data
+    elseif addr >= 0x8000 and addr < 0xffff then
+        print("ROM writing not supported yet")
     end
 end
 
 function Cpu:reset()
-    self.PC = bit.bor(self:read(0xFFFC), bit.lshift(self:read(0xFFFD), 8))
+    self.PC = bit.bor(self:read(0xfffc), bit.lshift(self:read(0xfffd), 8))
 end
 
 function Cpu:decode_instruction(opcode)

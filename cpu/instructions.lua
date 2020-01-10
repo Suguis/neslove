@@ -7,12 +7,13 @@ local function set_zero(byte) nes.cpu.Z = byte == 0x00 and 1 or 0 end
 
 local function branch(register, value)
     return function()
+        local addr = nes.cpu.op_addr
         if nes.cpu[register] == value then
             nes.cpu.wait_cycles = nes.cpu.wait_cycles + 1
-            if different_page(nes.cpu.PC, nes.cpu.op_addr) then
+            if different_page(nes.cpu.PC, addr) then
                 nes.cpu.wait_cycles = nes.cpu.wait_cycles + 1
             end
-            nes.cpu.PC = nes.cpu.op_addr
+            nes.cpu.PC = addr
         end
     end
 end
@@ -30,6 +31,13 @@ local instructions = {
         nes.cpu.C = A >= value and 1 or 0
         nes.cpu.Z = A == value and 1 or 0
         set_negative(A)
+    end,
+    JSR = function()
+        local addr = nes.cpu.op_addr
+        local stack_addr = bit.bor(nes.cpu.SP, 0x100)
+        nes.cpu:write(stack_addr, nes.cpu.PC - 1)
+        nes.cpu.SP = nes.cpu.SP - 1
+        nes.cpu.PC = addr
     end,
     LDA = function()
         local value = nes.cpu.op_value
