@@ -12,7 +12,7 @@ function love.conf(t)
  
     t.window.title = "neslove"          -- The window title (string)
     t.window.icon = nil                 -- Filepath to an image to use as the window's icon (string)
-    t.window.width = 256                -- The window width (number)
+    t.window.width = 256 * 2            -- The window width (number)
     t.window.height = 240               -- The window height (number)
     t.window.borderless = false         -- Remove all border visuals from the window (boolean)
     t.window.resizable = false          -- Let the window be user-resizable (boolean)

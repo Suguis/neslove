@@ -16,7 +16,8 @@ function Cpu:new()
         wait_cycles = 0,
         total_cycles = 0,
         zero_page = {},
-        stack = {}
+        stack = {},
+        ram = {},
     }, self)
 end
 
@@ -26,23 +27,19 @@ function Cpu:read(addr)
     elseif addr < 0x0200 then
         return self.stack[addr - 0xff]
     elseif addr < 0x0800 then
-        print("RAM reading not supported yet, returning 0xff")
-        return 0xff
+        local value = self.ram[addr - 0x1ff]
+        if value then return value
+        else print("WARNING: Reading an unwritten value of RAM, returning 0xff"); return 0xff end
     elseif addr < 0x2000 then -- Mirrors $0000-$07ff
         return self:read(addr % 0x800)
     elseif addr < 0x4000 then
         local value = nes.io[1][((addr - 0x2000) % 8) + 1]
-        if value then
-            return value
-        else
-            print("WARNING: Reading an unwritten value, returning 0xff")
-            return 0xff
-        end
+        if value then return value
+        else print("WARNING: Reading an unwritten value of I/O, returning 0xff"); return 0xff end
     elseif addr >= 0x8000 and addr < 0xffff then
         return nes.cartridge.mapper:read(addr - 0x8000)
     else
-        print("WARNING: Reading an unwritten value, returning 0xff")
-        return 0xff
+        error("Reading out of range")
     end
 end
 
@@ -52,7 +49,7 @@ function Cpu:write(addr, data)
     elseif addr < 0x0200 then
         self.stack[addr - 0xff] = data
     elseif addr < 0x0800 then
-        print("RAM writing not supported yet")
+        self.ram[addr - 0x1ff] = data
     elseif addr < 0x2000 then
         self:write(addr % 0x0800, data)
     elseif addr < 0x4000 then

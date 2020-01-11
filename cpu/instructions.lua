@@ -53,25 +53,25 @@ local instructions = {
         set_negative(Y)
     end,
     DEX = function()
-        local new_X = nes.cpu.X - 1
+        local new_X = bit.band(nes.cpu.X - 1, 0xff)
         nes.cpu.X = new_X
         set_negative(new_X)
         set_zero(new_X)
     end,
     DEY = function()
-        local new_Y = nes.cpu.Y - 1
+        local new_Y = bit.band(nes.cpu.Y - 1, 0xff)
         nes.cpu.Y = new_Y
         set_negative(new_Y)
         set_zero(new_Y)
     end,
     INX = function()
-        local new_X = nes.cpu.X + 1
+        local new_X = bit.band(nes.cpu.X + 1, 0xff)
         nes.cpu.X = new_X
         set_negative(new_X)
         set_zero(new_X)
     end,
     INY = function()
-        local new_Y = nes.cpu.Y + 1
+        local new_Y = bit.band(nes.cpu.Y + 1, 0xff)
         nes.cpu.Y = new_Y
         set_negative(new_Y)
         set_zero(new_Y)
@@ -80,7 +80,7 @@ local instructions = {
         local addr = nes.cpu.op_addr
         local stack_addr = bit.bor(nes.cpu.SP, 0x100)
         nes.cpu:write(stack_addr, nes.cpu.PC - 1)
-        nes.cpu.SP = nes.cpu.SP - 1
+        nes.cpu.SP = bit.band(nes.cpu.SP - 1, 0xff)
         nes.cpu.PC = addr
     end,
     LDA = function()
