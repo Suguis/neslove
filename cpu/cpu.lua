@@ -85,6 +85,14 @@ function Cpu:fetch()
     end
 end
 
+function Cpu:run()
+    local cycles = 21441960 / 60
+    while cycles > 0 do
+        self:cycle()
+        cycles = cycles - 1
+    end
+end
+
 function Cpu:cycle()
     self.total_cycles = self.total_cycles + 1
     if self.wait_cycles == 0 then

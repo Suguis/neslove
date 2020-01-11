@@ -6,8 +6,10 @@ local debugging = {
     LINES = 14,
     font = love.graphics.newFont("terminus.ttf"),
     on = false,
+    full_running = false,
     toggle_key = "d",
-    step_key = "s"
+    step_key = "s",
+    run_key = "r"
 }
 
 local function disas(addr)
@@ -49,7 +51,7 @@ local function disas(addr)
     end
 end
 
-function debugging.update()
+function debugging.update(key)
     if key == debugging.toggle_key then
         if not debugging.on then
             love.window.setMode(Nes.DISPLAY_WIDTH + debugging.DISPLAY_LENGTH, Nes.DISPLAY_HEIGHT)
@@ -60,7 +62,10 @@ function debugging.update()
         end
     elseif key == debugging.step_key then
         nes.cpu:cycle()
-    end 
+        debugging.full_running = false
+    elseif key == debugging.run_key then
+        debugging.full_running = true
+    end
 end
 
 function debugging.draw()

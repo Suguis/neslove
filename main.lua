@@ -13,25 +13,15 @@ function love.load()
     nes:reset()
 end
 
-function love.keyreleased(key, scancode)
+function love.keypressed(key, scancode)
     if debugging then -- If the debugging module is loaded
-        debugging.update()
-        if key == debugging.toggle_key then
-            if not debugging.on then
-                love.window.setMode(Nes.DISPLAY_WIDTH + debugging.DISPLAY_LENGTH, Nes.DISPLAY_HEIGHT)
-                debugging.on = true
-            else
-                love.window.setMode(Nes.DISPLAY_WIDTH, Nes.DISPLAY_HEIGHT)
-                debugging.on = false
-            end
-        elseif key == debugging.step_key then
-            nes.cpu:cycle()
-        end
+        debugging.update(key)
     end
 end
 
 function love.update(dt)
     nes:render_display()
+    if debugging.full_running then nes.cpu:run() end
 end
 
 function love.draw()
