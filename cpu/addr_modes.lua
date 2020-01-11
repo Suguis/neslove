@@ -36,6 +36,15 @@ local addr_modes = {
         nes.cpu.PC = nes.cpu.PC + 1
         return value
     end,
+    ["INDIRECT,Y"] = function()
+        local operand = nes.cpu:read(nes.cpu.PC)
+        nes.cpu.PC = nes.cpu.PC + 1
+        local last = nes.cpu:read(operand)
+        local first = nes.cpu:read(operand + 1)
+        local addr = bit.bor(bit.lshift(first, 8), last) + nes.cpu.Y
+        local value = nes.cpu:read(addr)
+        return value, addr
+    end,
     RELATIVE = function()
         local offset = nes.cpu:read(nes.cpu.PC)
         nes.cpu.PC = nes.cpu.PC + 1

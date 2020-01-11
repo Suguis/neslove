@@ -52,6 +52,30 @@ local instructions = {
         nes.cpu.Z = Y == value and 1 or 0
         set_negative(Y)
     end,
+    DEX = function()
+        local new_X = nes.cpu.X - 1
+        nes.cpu.X = new_X
+        set_negative(new_X)
+        set_zero(new_X)
+    end,
+    DEY = function()
+        local new_Y = nes.cpu.Y - 1
+        nes.cpu.Y = new_Y
+        set_negative(new_Y)
+        set_zero(new_Y)
+    end,
+    INX = function()
+        local new_X = nes.cpu.X + 1
+        nes.cpu.X = new_X
+        set_negative(new_X)
+        set_zero(new_X)
+    end,
+    INY = function()
+        local new_Y = nes.cpu.Y + 1
+        nes.cpu.Y = new_Y
+        set_negative(new_Y)
+        set_zero(new_Y)
+    end,
     JSR = function()
         local addr = nes.cpu.op_addr
         local stack_addr = bit.bor(nes.cpu.SP, 0x100)
@@ -82,6 +106,30 @@ local instructions = {
     SEI = function() nes.cpu.I = 1 end,
     STA = function() nes.cpu:write(nes.cpu.op_addr, nes.cpu.A) end,
     STX = function() nes.cpu:write(nes.cpu.op_addr, nes.cpu.X) end,
+    TAX = function()
+        local A = nes.cpu.A
+        nes.cpu.X = A
+        set_negative(A)
+        set_zero(A)
+    end,
+    TAY = function()
+        local A = nes.cpu.A
+        nes.cpu.Y = A
+        set_negative(A)
+        set_zero(A)
+    end,
+    TXA = function()
+        local X = nes.cpu.X
+        nes.cpu.A = X
+        set_negative(X)
+        set_zero(X)
+    end,
+    TYA = function()
+        local Y = nes.cpu.Y
+        nes.cpu.A = Y
+        set_negative(Y)
+        set_zero(Y)
+    end,
     TXS = function()
         local X = nes.cpu.X
         nes.cpu.SP = X
