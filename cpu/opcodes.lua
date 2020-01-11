@@ -14,6 +14,7 @@ local opcodes = {
     [0x38] = opcode("SEC", "IMPLIED", 2),
     [0x50] = opcode("BVC", "RELATIVE", 2),
     [0x58] = opcode("CLI", "IMPLIED", 2),
+    [0x60] = opcode("RTS", "IMPLIED", 6),
     [0x70] = opcode("BVS", "RELATIVE", 2),
     [0x78] = opcode("SEI", "IMPLIED", 2),
     [0x85] = opcode("STA", "ZERO_PAGE", 3),

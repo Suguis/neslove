@@ -101,6 +101,14 @@ local instructions = {
         set_negative(value)
         set_zero(value)
     end,
+    RTS = function()
+        local SP = nes.cpu.SP + 1
+        local last = nes.cpu:read(SP)
+        SP = SP + 1
+        local first = nes.cpu:read(SP)
+        nes.cpu.SP = SP
+        nes.cpu.PC = bit.bor(bit.lshift(first, 8), last)
+    end,
     SEC = function() nes.cpu.C = 1 end,
     SED = function() nes.cpu.D = 1 end,
     SEI = function() nes.cpu.I = 1 end,
