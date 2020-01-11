@@ -19,8 +19,14 @@ local function branch(register, value)
 end
 
 local instructions = {
+    BCC = branch("C", 0),
     BCS = branch("C", 1),
+    BMI = branch("N", 1),
+    BNE = branch("Z", 0),
+    BEQ = branch("Z", 1),
     BPL = branch("N", 0),
+    BVC = branch("V", 0),
+    BVS = branch("V", 1),
     CLC = function() nes.cpu.C = 0 end,
     CLD = function() nes.cpu.D = 0 end,
     CLI = function() nes.cpu.I = 0 end,
@@ -31,6 +37,20 @@ local instructions = {
         nes.cpu.C = A >= value and 1 or 0
         nes.cpu.Z = A == value and 1 or 0
         set_negative(A)
+    end,
+    CPX = function()
+        local X = nes.cpu.X
+        local value = nes.cpu.op_value
+        nes.cpu.C = X >= value and 1 or 0
+        nes.cpu.Z = X == value and 1 or 0
+        set_negative(X)
+    end,
+    CPY = function()
+        local Y = nes.cpu.Y
+        local value = nes.cpu.op_value
+        nes.cpu.C = Y >= value and 1 or 0
+        nes.cpu.Z = Y == value and 1 or 0
+        set_negative(Y)
     end,
     JSR = function()
         local addr = nes.cpu.op_addr
@@ -61,6 +81,7 @@ local instructions = {
     SED = function() nes.cpu.D = 1 end,
     SEI = function() nes.cpu.I = 1 end,
     STA = function() nes.cpu:write(nes.cpu.op_addr, nes.cpu.A) end,
+    STX = function() nes.cpu:write(nes.cpu.op_addr, nes.cpu.X) end,
     TXS = function()
         local X = nes.cpu.X
         nes.cpu.SP = X

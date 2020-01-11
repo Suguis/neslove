@@ -48,7 +48,6 @@ end
 
 function Cpu:write(addr, data)
     if addr >= 0x0000 and addr < 0x0100 then
-        print("write " .. data .. "to zp " .. addr)
         self.zero_page[addr + 1] = data
     elseif addr < 0x0200 then
         self.stack[addr - 0xff] = data
