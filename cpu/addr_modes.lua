@@ -60,7 +60,19 @@ local addr_modes = {
         local value = nes.cpu:read(addr)
         nes.cpu.PC = nes.cpu.PC + 1
         return value, addr
-    end
+    end,
+    ["ZERO_PAGE,X"] = function()
+        local addr = bit.band(nes.cpu:read(nes.cpu.PC) + nes.cpu.X, 0xff)
+        local value = nes.cpu:read(addr)
+        nes.cpu.PC = nes.cpu.PC + 1
+        return value, addr
+    end,
+    ["ZERO_PAGE,Y"] = function()
+        local addr = bit.band(nes.cpu:read(nes.cpu.PC) + nes.cpu.Y, 0xff)
+        local value = nes.cpu:read(addr)
+        nes.cpu.PC = nes.cpu.PC + 1
+        return value, addr
+    end,
 }
 
 return addr_modes

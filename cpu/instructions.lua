@@ -21,6 +21,12 @@ end
 local instructions = {
     BCC = branch("C", 0),
     BCS = branch("C", 1),
+    BIT = function()
+        local value = nes.cpu.op_value
+        set_zero(bit.band(value, nes.cpu.A))
+        nes.cpu.N = bit.rshift(value, 7)
+        nes.cpu.V = bit.band(bit.rshift(value, 6))
+    end,
     BMI = branch("N", 1),
     BNE = branch("Z", 0),
     BEQ = branch("Z", 1),

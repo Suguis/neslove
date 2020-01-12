@@ -36,6 +36,10 @@ function Cpu:read(addr)
         local value = nes.io[1][((addr - 0x2000) % 8) + 1]
         if value then return value
         else print("WARNING: Reading an unwritten value of I/O, returning 0xff"); return 0xff end
+    elseif addr < 0x4020 then
+        local value = nes.io[1][addr - 0x3fff]
+        if value then return value
+        else print("WARNING: Reading an unwritten value of I/O, returning 0xff"); return 0xff end
     elseif addr >= 0x8000 and addr < 0xffff then
         return nes.cartridge.mapper:read(addr - 0x8000)
     else
@@ -54,6 +58,8 @@ function Cpu:write(addr, data)
         self:write(addr % 0x0800, data)
     elseif addr < 0x4000 then
         nes.io[1][((addr - 0x200) % 8) + 1] = data
+    elseif addr < 0x4020 then
+        nes.io[1][addr - 0x3fff] = data
     elseif addr >= 0x8000 and addr < 0xffff then
         print("ROM writing not supported yet")
     end
