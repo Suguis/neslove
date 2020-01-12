@@ -8,7 +8,7 @@ local addr_modes = {
         nes.cpu.PC = nes.cpu.PC + 1
         local addr = bit.bor(bit.lshift(first, 8), last) -- (first << 8) | last
         local value = nes.cpu:read(addr)
-        return value, addr
+        return value, addr, different_page(addr, nes.cpu.PC - 3)
     end,
     ["ABSOLUTE,X"] = function()
         local last = nes.cpu:read(nes.cpu.PC)
@@ -17,8 +17,7 @@ local addr_modes = {
         nes.cpu.PC = nes.cpu.PC + 1
         local addr = bit.bor(bit.lshift(first, 8), last) + nes.cpu.X
         local value = nes.cpu:read(addr)
-        if different_page(addr, nes.cpu.PC) then nes.cpu.wait_cycles = nes.cpu.wait_cycles + 1 end
-        return value, addr
+        return value, addr, different_page(addr, nes.cpu.PC - 3)
     end,
     ["ABSOLUTE,Y"] = function()
         local last = nes.cpu:read(nes.cpu.PC)
@@ -28,7 +27,7 @@ local addr_modes = {
         local addr = bit.bor(bit.lshift(first, 8), last) + nes.cpu.Y
         local value = nes.cpu:read(addr)
         if different_page(addr, nes.cpu.PC) then nes.cpu.wait_cycles = nes.cpu.wait_cycles + 1 end
-        return value, addr
+        return value, addr, different_page(addr, nes.cpu.PC - 3)
     end,
     IMPLIED = function() end,
     INMEDIATE = function()
@@ -43,7 +42,7 @@ local addr_modes = {
         local first = nes.cpu:read(operand + 1)
         local addr = bit.bor(bit.lshift(first, 8), last) + nes.cpu.Y
         local value = nes.cpu:read(addr)
-        return value, addr
+        return value, addr, different_page(addr, nes.cpu.PC - 2)
     end,
     RELATIVE = function()
         local offset = nes.cpu:read(nes.cpu.PC)

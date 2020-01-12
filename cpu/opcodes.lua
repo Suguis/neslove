@@ -1,8 +1,9 @@
-local function opcode(ins, addrm, cyc)
+local function opcode(ins, addrm, cyc, pc)
     return {
         instruction = ins,
         addr_mode = addrm,
-        cycles = cyc
+        cycles = cyc,
+        add_if_page_crossed = pc or false
     }
 end
 
@@ -35,8 +36,11 @@ local opcodes = {
     [0xad] = opcode("LDA", "ABSOLUTE", 4),
     [0xb0] = opcode("BCS", "RELATIVE", 2),
     [0xb8] = opcode("CLV", "IMPLIED", 2),
+    [0xb9] = opcode("LDA", "ABSOLUTE,Y", 4, true),
     [0xba] = opcode("TSX", "IMPLIED", 2),
-    [0xbd] = opcode("LDA", "ABSOLUTE,X", 4),
+    [0xbc] = opcode("LDY", "ABSOLUTE,X", 4, true),
+    [0xbd] = opcode("LDA", "ABSOLUTE,X", 4, true),
+    [0xbe] = opcode("LDX", "ABSOLUTE,Y", 4, true),
     [0xc0] = opcode("CPY", "INMEDIATE", 2),
     [0xc4] = opcode("CPY", "ZERO_PAGE", 3),
     [0xc8] = opcode("INY", "IMPLIED", 2),

@@ -74,9 +74,16 @@ function Cpu:fetch()
     if operation then
         local run_instruction = instructions[operation.instruction]
         local address = addr_modes[operation.addr_mode]
-        self.op_value, self.op_addr = address()
+        local diff_page
+        self.op_value, self.op_addr, diff_page = address()
         run_instruction()
-        self.wait_cycles = self.wait_cycles + operation.cycles
+        -- If the opcode indicates that one aditional cycle is required if page boundary crossed
+        if operation.add_if_page_crossed and diff_page then
+            self.wait_cycles = self.wait_cycles + operation.cycles + 1
+            print("adding!")
+        else
+            self.wait_cycles = self.wait_cycles + operation.cycles
+        end
     else
         error(string.format("Instruction $%02x not implemented", opcode))
     end
