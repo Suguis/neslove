@@ -119,7 +119,7 @@ local instructions = {
         SP = SP + 1
         local first = nes.cpu:read(bit.bor(0x100, SP))
         nes.cpu.SP = SP
-        nes.cpu.PC = bit.bor(bit.lshift(first, 8), last)
+        nes.cpu.PC = bit.bor(bit.lshift(first, 8), last) + 1
     end,
     SEC = function() nes.cpu.C = 1 end,
     SED = function() nes.cpu.D = 1 end,
