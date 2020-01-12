@@ -80,7 +80,6 @@ function Cpu:fetch()
         -- If the opcode indicates that one aditional cycle is required if page boundary crossed
         if operation.add_if_page_crossed and diff_page then
             self.wait_cycles = self.wait_cycles + operation.cycles + 1
-            print("adding!")
         else
             self.wait_cycles = self.wait_cycles + operation.cycles
         end

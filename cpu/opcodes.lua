@@ -9,6 +9,7 @@ end
 
 local opcodes = {
     [0x10] = opcode("BPL", "RELATIVE", 2),
+    [0x11] = opcode("ORA", "INDIRECT,Y", 5, true),
     [0x18] = opcode("CLC", "IMPLIED", 2),
     [0x20] = opcode("JSR", "ABSOLUTE", 6),
     [0x30] = opcode("BMI", "RELATIVE", 2),

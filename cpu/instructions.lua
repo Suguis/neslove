@@ -106,6 +106,7 @@ local instructions = {
         set_negative(value)
         set_zero(value)
     end,
+    ORA = function() nes.cpu.A = bit.bor(nes.cpu.A, nes.cpu.op_value) end,
     RTS = function()
         local SP = nes.cpu.SP + 1
         local last = nes.cpu:read(bit.bor(0x100, SP))
