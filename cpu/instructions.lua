@@ -77,11 +77,16 @@ local instructions = {
         set_zero(new_Y)
     end,
     JSR = function()
-        local addr = nes.cpu.op_addr
-        local stack_addr = bit.bor(nes.cpu.SP, 0x100)
-        nes.cpu:write(stack_addr, nes.cpu.PC - 1)
-        nes.cpu.SP = bit.band(nes.cpu.SP - 1, 0xff)
-        nes.cpu.PC = addr
+        local SP = nes.cpu.SP
+        local sub_addr = nes.cpu.op_addr -- The address of the subroutine
+        local save_addr = nes.cpu.PC - 1 -- The address we keep inside the stack
+        local last = bit.band(save_addr, 0xff)
+        local first = bit.rshift(save_addr, 8)
+        nes.cpu:write(bit.bor(0x100, SP), first)
+        SP = bit.band(SP - 1, 0xff)
+        nes.cpu:write(bit.bor(0x100, SP), last)
+        nes.cpu.SP = bit.band(SP - 1, 0xff)
+        nes.cpu.PC = sub_addr
     end,
     LDA = function()
         local value = nes.cpu.op_value
@@ -103,9 +108,9 @@ local instructions = {
     end,
     RTS = function()
         local SP = nes.cpu.SP + 1
-        local last = nes.cpu:read(SP)
+        local last = nes.cpu:read(bit.bor(0x100, SP))
         SP = SP + 1
-        local first = nes.cpu:read(SP)
+        local first = nes.cpu:read(bit.bor(0x100, SP))
         nes.cpu.SP = SP
         nes.cpu.PC = bit.bor(bit.lshift(first, 8), last)
     end,
