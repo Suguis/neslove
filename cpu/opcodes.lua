@@ -8,9 +8,16 @@ local function opcode(ins, addrm, cyc, pc)
 end
 
 local opcodes = {
+    [0x01] = opcode("ORA", "INDIRECT,X", 6),
+    [0x05] = opcode("ORA", "ZERO_PAGE", 3),
+    [0x09] = opcode("ORA", "INMEDIATE", 2),
+    [0x0d] = opcode("ORA", "ABSOLUTE", 4),
     [0x10] = opcode("BPL", "RELATIVE", 2),
     [0x11] = opcode("ORA", "INDIRECT,Y", 5, true),
+    [0x15] = opcode("ORA", "ZERO_PAGE,X", 4),
     [0x18] = opcode("CLC", "IMPLIED", 2),
+    [0x1d] = opcode("ORA", "ABSOLUTE,X", 4, true),
+    [0x19] = opcode("ORA", "ABSOLUTE,Y", 4, true),
     [0x20] = opcode("JSR", "ABSOLUTE", 6),
     [0x24] = opcode("BIT", "ZERO_PAGE", 3),
     [0x2c] = opcode("BIT", "ABSOLUTE", 4),

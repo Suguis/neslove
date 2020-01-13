@@ -35,6 +35,15 @@ local addr_modes = {
         nes.cpu.PC = nes.cpu.PC + 1
         return value
     end,
+    ["INDIRECT,X"] = function()
+        local operand = bit.band(nes.cpu:read(nes.cpu.PC) + nes.cpu.X, 0xff)
+        nes.cpu.PC = nes.cpu.PC + 1
+        local last = nes.cpu:read(operand)
+        local first = nes.cpu:read(operand + 1)
+        local addr = bit.bor(bit.lshift(first, 8), last)
+        local value = nes.cpu:read(addr)
+        return value, addr, different_page(addr, nes.cpu.PC - 2)
+    end,
     ["INDIRECT,Y"] = function()
         local operand = nes.cpu:read(nes.cpu.PC)
         nes.cpu.PC = nes.cpu.PC + 1
