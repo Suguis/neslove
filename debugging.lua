@@ -31,6 +31,8 @@ local function disas(addr)
             local first = nes.cpu:read(addr + 2)
             local addr = bit.bor(bit.lshift(first, 8), last)
             return string.format("%s $%04x,Y", operation.instruction, addr), 3
+        elseif operation.addr_mode == "ACCUMULATOR" then
+            return string.format("%s A", operation.instruction), 1
         elseif operation.addr_mode == "IMPLIED" then
             return operation.instruction, 1
         elseif operation.addr_mode == "INDIRECT,X" then

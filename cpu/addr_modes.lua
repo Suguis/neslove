@@ -29,6 +29,9 @@ local addr_modes = {
         if different_page(addr, nes.cpu.PC) then nes.cpu.wait_cycles = nes.cpu.wait_cycles + 1 end
         return value, addr, different_page(addr, nes.cpu.PC - 3)
     end,
+    ACCUMULATOR = function()
+        return nes.cpu.A
+    end,
     IMPLIED = function() end,
     INMEDIATE = function()
         local value = nes.cpu:read(nes.cpu.PC)
