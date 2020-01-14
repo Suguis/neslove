@@ -82,7 +82,7 @@ end
 function debugging.draw()
     love.graphics.setFont(debugging.font)
     love.graphics.print(string.format("PC=$%04x SP=$%02x cycles=%d\nA=$%02x X=$%02x Y=$%02x\nC=%d Z=%d I=%d D=%d B=%d V=%d N=%d",
-    nes.cpu.PC, nes.cpu.SP, nes.cpu.total_cycles, nes.cpu.A, nes.cpu.X, nes.cpu.Y, nes.cpu.C, nes.cpu.Z, nes.cpu.I, nes.cpu.D, nes.cpu.B, nes.cpu.V, nes.cpu.N),
+    nes.cpu.PC, nes.cpu.SP, nes.cpu.total_cycles, nes.cpu.A, nes.cpu.X, nes.cpu.Y, nes.cpu:get_flag("C"), nes.cpu:get_flag("Z"), nes.cpu:get_flag("I"), nes.cpu:get_flag("D"), nes.cpu:get_flag("B"), nes.cpu:get_flag("V"), nes.cpu:get_flag("N")),
     debugging.DISPLAY_LENGTH + 1, 0)
     local curr_addr = nes.cpu.PC
     for i = 1, debugging.LINES do

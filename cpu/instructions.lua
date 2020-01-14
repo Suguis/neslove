@@ -2,8 +2,9 @@ local bit = require "bit"
 local different_page = (require "util").different_page
 
 -- Set flags according to the argument
-local function set_negative(byte) nes.cpu.N = bit.rshift(bit.band(0x80, byte), 7) end -- (0x80 & byte) >> 7
-local function set_zero(byte) nes.cpu.Z = byte == 0x00 and 1 or 0 end
+local function set_negative(byte) nes.cpu:set_flag("N", bit.rshift(bit.band(0x80, byte), 7)) end -- (0x80 & byte) >> 7
+local function set_zero(byte) nes.cpu:get_flag("Z", byte == 0x00 and 1 or 0) end
+
 local function push_addr(addr)
     local SP = nes.cpu.SP
     local last = bit.band(addr, 0xff)
@@ -30,10 +31,10 @@ local function pop_value()
     return nes.cpu:read(bit.bor(0x100, nes.cpu.SP))
 end
 
-local function branch(register, value)
+local function branch(flag, value)
     return function()
         local addr = nes.cpu.op_addr
-        if nes.cpu[register] == value then
+        if nes.cpu:get_flag(flag) == value then
             nes.cpu.wait_cycles = nes.cpu.wait_cycles + 1
             if different_page(nes.cpu.PC, addr) then
                 nes.cpu.wait_cycles = nes.cpu.wait_cycles + 1
@@ -48,14 +49,14 @@ local instructions = {
         local A = nes.cpu.A
         local value = nes.cpu.op_value
         local result = nes.cpu.A + nes.cpu.op_value
-        nes.cpu.C = bit.rshift(bit.band(result, 0x100), 8)
+        nes.cpu:set_flag("C", bit.rshift(bit.band(result, 0x100), 8))
         result = bit.band(result, 0xff)
         set_negative(result)
         if bit.band(A, 0x80) == bit.band(value, 0x80)
             and bit.band(A, 0x80) ~= bit.band(result, 0x80) then
-            nes.cpu.V = 1
+            nes.cpu:set_flag("V", 1)
         else
-            nes.cpu.V = 0
+            nes.cpu:set_flag("V", 0)
         end
         set_zero(result)
     end,
@@ -73,7 +74,7 @@ local instructions = {
             value = bit.lshift(nes.cpu.A, 1)
             nes.cpu.A = bit.band(value, 0xff)
         end
-        nes.cpu.C = bit.rshift(value, 8)
+        nes.cpu:set_flag("C", bit.rshift(value, 8))
         value = bit.band(value, 0xff)
         set_negative(value)
         set_zero(value)
@@ -83,8 +84,8 @@ local instructions = {
     BIT = function()
         local value = nes.cpu.op_value
         set_zero(bit.band(value, nes.cpu.A))
-        nes.cpu.N = bit.rshift(value, 7)
-        nes.cpu.V = bit.band(bit.rshift(value, 6))
+        nes.cpu:set_flag("N", bit.rshift(value, 7))
+        nes.cpu:set_flag("V", bit.band(bit.rshift(value, 6)))
     end,
     BMI = branch("N", 1),
     BNE = branch("Z", 0),
@@ -99,22 +100,22 @@ local instructions = {
     CMP = function()
         local A = nes.cpu.A
         local value = nes.cpu.op_value
-        nes.cpu.C = A >= value and 1 or 0
-        nes.cpu.Z = A == value and 1 or 0
+        nes.cpu:set_flag("C", A >= value and 1 or 0)
+        nes.cpu:set_flag("Z", A == value and 1 or 0)
         set_negative(A)
     end,
     CPX = function()
         local X = nes.cpu.X
         local value = nes.cpu.op_value
-        nes.cpu.C = X >= value and 1 or 0
-        nes.cpu.Z = X == value and 1 or 0
+        nes.cpu:set_flag("C", X >= value and 1 or 0)
+        nes.cpu:set_flag("Z", X == value and 1 or 0)
         set_negative(X)
     end,
     CPY = function()
         local Y = nes.cpu.Y
         local value = nes.cpu.op_value
-        nes.cpu.C = Y >= value and 1 or 0
-        nes.cpu.Z = Y == value and 1 or 0
+        nes.cpu:set_flag("C", Y >= value and 1 or 0)
+        nes.cpu:set_flag("Z", Y == value and 1 or 0)
         set_negative(Y)
     end,
     DEX = function()

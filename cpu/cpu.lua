@@ -5,12 +5,21 @@ local instructions = require "cpu.instructions"
 Cpu = {}
 Cpu.__index = Cpu
 
+local flags = {
+    N = 0x80,
+    V = 0x40,
+    B = 0x10,
+    D = 0x08,
+    I = 0x04,
+    Z = 0x02,
+    C = 0x01
+}
+
 function Cpu:new()
     return setmetatable({
-        PC = 0, SP = 0xff, A = 0,
-        X = 0, Y = 0, C = 0,
-        Z = 0, I = 0, D = 0,
-        B = 0, V = 0, N = 0,
+        PC = 0, SP = 0xff,
+        A = 0, X = 0, Y = 0,
+        flags = 0,
         op_value = nil,
         op_addr = nil,
         wait_cycles = 0,
@@ -19,6 +28,24 @@ function Cpu:new()
         stack = {},
         ram = {},
     }, self)
+end
+
+function Cpu:set_flag(flag, value)
+    if value == 0 then
+        self.flags = bit.band(self.flags, bit.bnot(flags[flag]))
+    else
+        self.flags = bit.bor(self.flags, flags[flag])
+    end
+end
+
+function Cpu:get_flag(flag)
+    local mask = flags[flag]
+    local req_flag = self.flags
+    while mask ~= 0x01 do
+        mask = bit.rshift(mask, 1)
+        req_flag = bit.rshift(req_flag, 1)
+    end
+    return bit.band(req_flag, 0x01)
 end
 
 function Cpu:read(addr)
