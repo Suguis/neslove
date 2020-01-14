@@ -91,6 +91,13 @@ local instructions = {
     BNE = branch("Z", 0),
     BEQ = branch("Z", 1),
     BPL = branch("N", 0),
+    BRK = function()
+        push_addr(nes.cpu.PC - 1)
+        push_byte(nes.cpu.flags)
+        nes.cpu:set_flag("B", 1)
+        nes.cpu:set_flag("I", 1)
+        nes.cpu.PC = bit.bor(bit.lshift(nes.cpu:read(0xffff), 8), nes.cpu:read(0xfffe))
+    end,
     BVC = branch("V", 0),
     BVS = branch("V", 1),
     CLC = function() nes.cpu.C = 0 end,
