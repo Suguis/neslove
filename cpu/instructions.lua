@@ -256,6 +256,7 @@ local instructions = {
     SEI = function() nes.cpu.I = 1 end,
     STA = function() nes.cpu:write(nes.cpu.op_addr, nes.cpu.A) end,
     STX = function() nes.cpu:write(nes.cpu.op_addr, nes.cpu.X) end,
+    STY = function() nes.cpu:write(nes.cpu.op_addr, nes.cpu.Y) end,
     TAX = function()
         local A = nes.cpu.A
         nes.cpu.X = A
