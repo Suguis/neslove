@@ -41,7 +41,7 @@ local function disas(addr)
         elseif operation.addr_mode == "INDIRECT,Y" then
             local operator = nes.cpu:read(addr + 1)
             return string.format("%s ($%02x),Y", operation.instruction, operator), 2
-        elseif operation.addr_mode == "INMEDIATE" then
+        elseif operation.addr_mode == "IMMEDIATE" then
             return string.format("%s #$%02x", operation.instruction, nes.cpu:read(addr + 1)), 2
         elseif operation.addr_mode == "RELATIVE" then
             local len = 2

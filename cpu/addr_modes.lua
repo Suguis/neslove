@@ -33,7 +33,7 @@ local addr_modes = {
         return nes.cpu.A
     end,
     IMPLIED = function() end,
-    INMEDIATE = function()
+    IMMEDIATE = function()
         local value = nes.cpu:read(nes.cpu.PC)
         nes.cpu.PC = nes.cpu.PC + 1
         return value

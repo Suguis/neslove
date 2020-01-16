@@ -20,7 +20,7 @@ local function pop_addr()
     SP = SP + 1
     local first = nes.cpu:read(bit.bor(0x100, SP))
     nes.cpu.SP = SP
-    return bit.bor(bit.lshift(first, 8), last) + 1
+    return bit.bor(bit.lshift(first, 8), last)
 end
 local function push_value(value)
     nes.cpu:write(bit.bor(0x100, nes.cpu.SP), value)
@@ -48,7 +48,7 @@ local instructions = {
     ADC = function()
         local A = nes.cpu.A
         local value = nes.cpu.op_value
-        local result = nes.cpu.A + nes.cpu.op_value
+        local result = nes.cpu.A + nes.cpu.op_value + nes.cpu:get_flag("C")
         nes.cpu:set_flag("C", bit.rshift(bit.band(result, 0x100), 8))
         result = bit.band(result, 0xff)
         set_negative(result)
@@ -66,18 +66,16 @@ local instructions = {
         set_zero(result)
     end,
     ASL = function()
-        local value
+        local value = nes.cpu.op_value or nes.cpu.A
+        local result = bit.band(bit.lshift(value, 1), 0xff)
+        nes.cpu:set_flag("C", bit.rshift(value, 7))
         if nes.cpu.op_value then
-            value = bit.lshift(nes.cpu.op_value, 1)
-            nes.cpu:write(nes.cpu.op_addr, bit.band(value, 0xff))
-        else -- Value from the accumulator
-            value = bit.lshift(nes.cpu.A, 1)
-            nes.cpu.A = bit.band(value, 0xff)
+            nes.cpu:write(nes.cpu.op_addr, result)
+        else -- If adressing mode == ACCUMULATOR
+            nes.cpu.A = result
         end
-        nes.cpu:set_flag("C", bit.rshift(value, 8))
-        value = bit.band(value, 0xff)
-        set_negative(value)
-        set_zero(value)
+        set_negative(result)
+        set_zero(result)
     end,
     BCC = branch("C", 0),
     BCS = branch("C", 1),
@@ -125,6 +123,9 @@ local instructions = {
         nes.cpu:set_flag("Z", Y == value and 1 or 0)
         set_negative(Y)
     end,
+    DEC = function()
+        nes.cpu:write(nes.cpu.op_addr, bit.band(nes.cpu.op_value - 1, 0xff))
+    end,
     DEX = function()
         local new_X = bit.band(nes.cpu.X - 1, 0xff)
         nes.cpu.X = new_X
@@ -136,6 +137,11 @@ local instructions = {
         nes.cpu.Y = new_Y
         set_negative(new_Y)
         set_zero(new_Y)
+    end,
+    EOR = function()
+        local result = bit.bxor(nes.cpu.op_value, nes.cpu.A)
+        set_negative(result)
+        set_zero(result)
     end,
     INC = function()
         nes.cpu:write(nes.cpu.op_addr, bit.band(nes.cpu.op_value + 1, 0xff))
@@ -179,9 +185,71 @@ local instructions = {
         set_negative(value)
         set_zero(value)
     end,
+    LSR = function()
+        local value = nes.cpu.op_value or nes.cpu.A
+        local result = bit.rshift(value, 1)
+        nes.cpu:set_flag("C", bit.band(value, 0x01))
+        if nes.cpu.op_value then
+            nes.cpu:write(nes.cpu.op_addr, result)
+        else -- If adressing mode == ACCUMULATOR
+            nes.cpu.A = result
+        end
+        set_negative(result)
+        set_zero(result)
+    end,
+    NOP = function() end,
     ORA = function() nes.cpu.A = bit.bor(nes.cpu.A, nes.cpu.op_value) end,
-    RTS = function()
+    PHA = function() push_value(nes.cpu.A) end,
+    PHP = function() push_value(nes.cpu.flags) end,
+    PLA = function() nes.cpu.A = pop_value() end,
+    PLP = function() nes.cpu.flags = pop_value() end,
+    ROL = function()
+        local value = nes.cpu.op_value or nes.cpu.A
+        local result = bit.bor(bit.band(bit.lshift(value, 1), 0xff),
+                               nes.cpu:get_flag("C"))
+        nes.cpu:set_flag("C", bit.rshift(value, 7))
+        if nes.cpu.op_value then
+            nes.cpu:write(nes.cpu.op_addr, result)
+        else -- If adressing mode == ACCUMULATOR
+            nes.cpu.A = result
+        end
+        set_negative(result)
+        set_zero(result)
+    end,
+    ROR = function()
+        local value = nes.cpu.op_value or nes.cpu.A
+        local result = bit.bor(bit.rshift(value, 1),
+                               bit.lshift(nes.cpu:get_flag("C"), 7))
+        nes.cpu:set_flag("C", bit.band(value, 0x01))
+        if nes.cpu.op_value then
+            nes.cpu:write(nes.cpu.op_addr, result)
+        else -- If adressing mode == ACCUMULATOR
+            nes.cpu.A = result
+        end
+        set_negative(result)
+        set_zero(result)
+    end,
+    RTI = function()
+        nes.cpu.flags = pop_value()
         nes.cpu.PC = pop_addr()
+    end,
+    RTS = function()
+        nes.cpu.PC = pop_addr() + 1
+    end,
+    SBC = function()
+        local A = nes.cpu.A
+        local value = nes.cpu.op_value
+        local result = A - value - (nes.cpu:get_flag("C") == 0 and 1 or 0)
+        nes.cpu:set_flag("C", bit.band(result, 0x100) == 0 and 1 or 0)
+        result = bit.band(result, 0xff)
+        set_negative(result)
+        if bit.band(A, 0x80) ~= bit.band(value, 0x80)
+            and bit.band(result, 0x80) == bit.band(value, 0x80) then
+            nes.cpu:set_flag("V", 1)
+        else
+            nes.cpu:set_flag("V", 0)
+        end
+        set_zero(result)
     end,
     SEC = function() nes.cpu.C = 1 end,
     SED = function() nes.cpu.D = 1 end,
