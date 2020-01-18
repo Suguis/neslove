@@ -66,7 +66,7 @@ function Cpu:read(addr)
     elseif addr < 0x4020 then
         local value = nes.io[1][addr - 0x3fff]
         if value then return value
-        else print("WARNING: Reading an unwritten value of I/O, returning 0xff"); return 0xff end
+        else print("WARNING: Reading an unwritten value of I/O, returning 0x00"); return 0x00 end
     elseif addr >= 0x8000 and addr < 0xffff then
         return nes.cartridge.mapper:read(addr - 0x8000)
     else
